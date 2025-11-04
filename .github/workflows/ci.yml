@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ master]
+
+jobs:
+  build-and-test:
+    name: Format Check and Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Check code formatting
+        run: |
+          dotnet tool install -g dotnet-format
+          dotnet format src/src.sln --verify-no-changes
+
+      - name: Restore dependencies
+        run: dotnet restore src/src.sln
+
+      - name: Build
+        run: dotnet build src/src.sln --no-restore --configuration Release
